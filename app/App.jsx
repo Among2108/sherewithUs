@@ -1,11 +1,11 @@
 import React from 'react'
 import { RouterProvider, createBrowserRouter } from 'react-router'
-import Layout from './page/Layout'
-import TripDashboard from "./page/trip/TripDashboard";
-import TripMembers from "./page/trip/TripMembers";
-import TripExpenses from "./page/trip/TripExpenses";
-import TripSummary from "./page/trip/TripSummary";
-import Home from "./page/Home";
+import Layout from '../src/page/Layout'
+import TripDashboard from "../src/page/trip/TripDashboard";
+import TripMembers from "../src/page/trip/TripMembers";
+import TripExpenses from "../src/page/trip/TripExpenses";
+import TripSummary from "../src/page/trip/TripSummary";
+import Home from "../src/page/Home";
 
 const router = createBrowserRouter([
   {
