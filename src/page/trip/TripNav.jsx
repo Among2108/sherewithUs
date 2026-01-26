@@ -14,7 +14,7 @@ export default function TripNav() {
   ];
 
   return (
-    <nav className="flex flex-wrap justify-center gap-2 ">
+    <nav className="flex flex-wrap gap-2">
       {tabs.map((t) => (
         <NavLink
           key={t.label}
