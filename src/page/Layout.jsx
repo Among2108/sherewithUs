@@ -1,14 +1,15 @@
-import React from 'react'
-import { Outlet } from 'react-router'
-import Navbar from './Navbar'
+import { Outlet} from "react-router";
+import Navbar from "../components/Navbar";
 
-const Layout = () => {
+export default function TripLayout() {
   return (
-    <div>
+    <div >
+      <header>
         <Navbar/>
-        <Outlet/>
+      </header>
+      <main >
+        <Outlet />
+      </main>
     </div>
-  )
+  );
 }
-
-export default Layout
