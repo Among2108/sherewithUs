@@ -1,22 +1,13 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
-export function TableSummary({ members = [], summary = [] }) {
-  const nameOf = (id) =>
-    members.find((m) => m.id === id)?.name || "Unknown";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
 
+
+export function TableSummary({ summary = [] }) {
   const money = (n) =>
     Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
 
   return (
     <Table className="border border-white/15">
-      {/* Header */}
       <TableHeader>
         <TableRow className="border-b border-white/20">
           <TableHead>Name</TableHead>
@@ -26,15 +17,15 @@ export function TableSummary({ members = [], summary = [] }) {
         </TableRow>
       </TableHeader>
 
-      {/* Body */}
       <TableBody>
         {summary.map((row) => (
           <TableRow
             key={row.memberId}
             className="border-b border-white/10 last:border-0"
           >
+            {/* ✅ ใช้ name จาก backend โดยตรง */}
             <TableCell className="font-medium">
-              {nameOf(row.memberId)}
+              {row.name}
             </TableCell>
 
             <TableCell className="text-right">

@@ -16,13 +16,15 @@ import {
 } from "@/components/ui/table";
 import { MoreHorizontalIcon } from "lucide-react";
 
-/**
- * members: [{ id, name }]
- * expenses: [{ amount, paidByMemberId }]
- * onEdit: (member) => void
- * onDelete: (memberId) => void
- */
-export function MembersTable({ members = [], expenses = [], onEdit, onDelete }) {
+import { tripAPI } from "../../service/trip.api";
+
+
+export function MembersTable({
+  tripId,
+  members = [],
+  expenses = [],
+  onDeleted,
+}) {
   // รวมยอด "จ่ายไป" ต่อคนจาก expenses
   const paidMap = expenses.reduce((acc, e) => {
     const mid = e.paidByMemberId;
@@ -33,7 +35,29 @@ export function MembersTable({ members = [], expenses = [], onEdit, onDelete }) 
   }, {});
 
   const formatMoney = (n) =>
-    (Number(n) || 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
+    (Number(n) || 0).toLocaleString(undefined, {
+      maximumFractionDigits: 2,
+    });
+
+const remove = async (memberId) => {
+  if (!tripId) return;
+
+  const ok = confirm("Remove this member?");
+  if (!ok) return;
+
+  try {
+    await tripAPI.deleteMember(tripId, memberId);
+
+    // ✅ เรียกหลังลบสำเร็จจริง
+    onDeleted?.();
+  } catch (err) {
+    alert(
+      err?.response?.data?.message ||
+      "Failed to remove member"
+    );
+  }
+};
+
 
   return (
     <Table>
@@ -48,17 +72,20 @@ export function MembersTable({ members = [], expenses = [], onEdit, onDelete }) 
       <TableBody>
         {members.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={3} className="text-center text-muted-foreground">
+            <TableCell
+              colSpan={3}
+              className="text-center text-muted-foreground"
+            >
               No members yet
             </TableCell>
           </TableRow>
         ) : (
           members.map((m) => (
-            <TableRow key={m.id}>
+            <TableRow key={m._id}>
               <TableCell className="font-medium">{m.name}</TableCell>
 
               <TableCell className="text-right">
-                {formatMoney(paidMap[m.id] || 0)}
+                {formatMoney(paidMap[m._id] || 0)}
               </TableCell>
 
               <TableCell className="text-right">
@@ -71,13 +98,14 @@ export function MembersTable({ members = [], expenses = [], onEdit, onDelete }) 
                   </DropdownMenuTrigger>
 
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onEdit?.(m)}>
-                      Edit
-                    </DropdownMenuItem>
+                    {/* future: edit name */}
+                    <DropdownMenuItem disabled>Edit</DropdownMenuItem>
+
                     <DropdownMenuSeparator />
+
                     <DropdownMenuItem
                       variant="destructive"
-                      onClick={() => onDelete?.(m.id)}
+                      onClick={() => remove(m._id)}
                     >
                       Delete
                     </DropdownMenuItem>

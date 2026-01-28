@@ -16,26 +16,37 @@ import {
 } from "@/components/ui/table";
 import { MoreHorizontalIcon } from "lucide-react";
 
+import { expenseAPI } from "../../service/expense.api";
+
 /**
  * props:
- * - expenses
- * - members
- * - onEdit(expense)
- * - onDelete(expenseId)
+ * - tripId
+ * - expenses: [{ _id, title, category, amount, paidByMemberId, splitAmongIds }]
+ * - members: [{ _id, name }]
+ * - onDeleted: () => void
  */
 export function TableExpense({
+  tripId,
   expenses = [],
   members = [],
-  onEdit,
-  onDelete,
+  onDeleted,
 }) {
   const memberName = (id) =>
-    members.find((m) => m.id === id)?.name || "Unknown";
+    members.find((m) => m._id === id)?.name || "Unknown";
 
   const formatMoney = (n) =>
     (Number(n) || 0).toLocaleString(undefined, {
       maximumFractionDigits: 2,
     });
+
+  const remove = async (expenseId) => {
+    if (!tripId) return;
+    const ok = confirm("Delete this expense?");
+    if (!ok) return;
+
+    await expenseAPI.remove(tripId, expenseId);
+    onDeleted?.(); // 👈 refresh list
+  };
 
   return (
     <Table>
@@ -62,8 +73,10 @@ export function TableExpense({
           </TableRow>
         ) : (
           expenses.map((e) => (
-            <TableRow key={e.id}>
-              <TableCell className="font-medium">{e.title}</TableCell>
+            <TableRow key={e._id}>
+              <TableCell className="font-medium">
+                {e.title}
+              </TableCell>
 
               <TableCell>{e.category || "-"}</TableCell>
 
@@ -71,7 +84,9 @@ export function TableExpense({
                 {formatMoney(e.amount)}
               </TableCell>
 
-              <TableCell>{memberName(e.paidByMemberId)}</TableCell>
+              <TableCell>
+                {memberName(e.paidByMemberId)}
+              </TableCell>
 
               <TableCell className="text-center">
                 {e.splitAmongIds?.length || 0}
@@ -91,13 +106,16 @@ export function TableExpense({
                   </DropdownMenuTrigger>
 
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onEdit?.(e)}>
+                    {/* future: edit expense */}
+                    <DropdownMenuItem disabled>
                       Edit
                     </DropdownMenuItem>
+
                     <DropdownMenuSeparator />
+
                     <DropdownMenuItem
                       variant="destructive"
-                      onClick={() => onDelete?.(e.id)}
+                      onClick={() => remove(e._id)}
                     >
                       Delete
                     </DropdownMenuItem>
